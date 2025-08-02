@@ -1,29 +1,36 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { BottomBar } from '@/components/BottomBar';
+import { supabase } from '@/lib/supabase';
+import { Stack, useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { View } from 'react-native';
+import '../app/global.css';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const router = useRouter();
+  
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) router.replace('/login');
+    };
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+    checkAuth();
+  }, [router]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+    <View className="flex-1">
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        {/* Detach the barcode screen on blur to free camera hardware */}
+        <Stack.Screen
+          name="barcode"
+          options={{ detachPreviousScreen: true } as any}
+        />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+      <BottomBar />
+    </View>
   );
 }
