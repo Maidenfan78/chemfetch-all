@@ -1,3 +1,4 @@
+// app/_layout.tsx
 import { BottomBar } from '@/components/BottomBar';
 import { supabase } from '@/lib/supabase';
 import { Stack, useRouter } from 'expo-router';
@@ -7,7 +8,7 @@ import '../app/global.css';
 
 export default function RootLayout() {
   const router = useRouter();
-  
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -23,13 +24,7 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
         }}
-      >
-        {/* Detach the barcode screen on blur to free camera hardware */}
-        <Stack.Screen
-          name="barcode"
-          options={{ detachPreviousScreen: true } as any}
-        />
-      </Stack>
+      />
       <BottomBar />
     </View>
   );
