@@ -16,7 +16,10 @@ import { Platform } from 'react-native';
 function guessHost(): string {
   if (process.env.EXPO_PUBLIC_DEV_HOST) return process.env.EXPO_PUBLIC_DEV_HOST;
 
-  const uri = Constants?.expoConfig?.hostUri ?? '';
+  const uri =
+    Constants?.expoConfig?.hostUri ||
+    Constants?.expoGoConfig?.debuggerHost ||
+    '';
   if (uri) return uri.split(':').shift()!; // "192.168.0.23" when hostUri="192.168.0.23:8081"
 
   if (Platform.OS === 'android') return '10.0.2.2';
@@ -31,7 +34,6 @@ function guessHost(): string {
 export const HOST_GUESS = guessHost();
 
 if (__DEV__) {
-  // eslint-disable-next-line no-console
   console.info(`[ChemFetch] guessHost() resolved to: ${HOST_GUESS}`);
 }
 
